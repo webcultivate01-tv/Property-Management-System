@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Moon, Sun, Building2 } from 'lucide-react';
-import { useTheme } from '@/context/ThemeContext';
-import { useAuth } from '@/context/AuthContext';
+import { Menu, X, Building2, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const links = [
@@ -17,8 +15,6 @@ const links = [
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { theme, toggle } = useTheme();
-  const { user } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
@@ -73,23 +69,15 @@ export default function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={toggle}
-            className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5"
-            aria-label="Toggle theme"
+          <a
+            href="tel:+919876543210"
+            className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-300 transition px-3 py-2"
           >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-
-          {user ? (
-            <Link to="/admin" className="btn-primary hidden sm:inline-flex">
-              Dashboard
-            </Link>
-          ) : (
-            <Link to="/login" className="btn-primary hidden sm:inline-flex">
-              Sign In
-            </Link>
-          )}
+            <Phone size={15} /> +91 98765 43210
+          </a>
+          <Link to="/contact" className="btn-primary hidden sm:inline-flex">
+            Talk to expert
+          </Link>
 
           <button
             className="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5"
@@ -127,8 +115,14 @@ export default function Navbar() {
                   {l.label}
                 </NavLink>
               ))}
-              <Link to={user ? '/admin' : '/login'} className="btn-primary mt-2">
-                {user ? 'Dashboard' : 'Sign In'}
+              <a
+                href="tel:+919876543210"
+                className="px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-100 dark:hover:bg-white/5 inline-flex items-center gap-2"
+              >
+                <Phone size={14} /> +91 98765 43210
+              </a>
+              <Link to="/contact" className="btn-primary mt-2">
+                Talk to expert
               </Link>
             </div>
           </motion.div>

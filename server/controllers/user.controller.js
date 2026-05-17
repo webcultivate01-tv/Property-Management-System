@@ -8,7 +8,7 @@ exports.listUsers = asyncHandler(async (req, res) => {
   const page = Math.max(parseInt(req.query.page) || 1, 1);
   const limit = Math.min(parseInt(req.query.limit) || 10, 100);
   const skip = (page - 1) * limit;
-  const { search, role, isActive } = req.query;
+  const { search, role, roles, isActive } = req.query;
 
   const filter = {};
   if (search) {
@@ -17,7 +17,15 @@ exports.listUsers = asyncHandler(async (req, res) => {
       { email: new RegExp(search, 'i') },
     ];
   }
-  if (role) filter.role = role;
+  if (roles) {
+    const list = String(roles)
+      .split(',')
+      .map((r) => r.trim())
+      .filter(Boolean);
+    if (list.length) filter.role = { $in: list };
+  } else if (role) {
+    filter.role = role;
+  }
   if (isActive !== undefined) filter.isActive = isActive === 'true';
 
   const [items, total] = await Promise.all([

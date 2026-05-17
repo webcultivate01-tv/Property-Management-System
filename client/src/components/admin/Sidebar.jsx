@@ -1,7 +1,7 @@
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  LayoutDashboard, Building2, MessageSquare, Star, Users,
+  LayoutDashboard, Building2, MessageSquare, Star, ShieldCheck, UserCog,
   Settings, ArrowLeft, LogOut, ChevronRight, Zap, X,
   CalendarDays,
 } from 'lucide-react';
@@ -27,7 +27,13 @@ const groups = [
     items: [
       { to: '/admin/inquiries', icon: MessageSquare, label: 'Inquiries' },
       { to: '/admin/reviews', icon: Star, label: 'Reviews' },
-      { to: '/admin/users', icon: Users, label: 'Users', roles: ['super_admin', 'admin'] },
+    ],
+  },
+  {
+    label: 'Team',
+    items: [
+      { to: '/admin/admins', icon: ShieldCheck, label: 'Admins', roles: ['super_admin', 'admin'] },
+      { to: '/admin/agents', icon: UserCog, label: 'Agents', roles: ['super_admin', 'admin'] },
     ],
   },
   {

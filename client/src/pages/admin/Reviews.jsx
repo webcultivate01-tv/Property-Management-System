@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import { Search, Trash2, Check, X, Star } from 'lucide-react';
 import { reviewService } from '@/services/review.service';
 import { PageHeader } from '@/components/admin/PageHeader';
+import { ExportMenu } from '@/components/admin/ExportMenu';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Spinner';
@@ -11,6 +12,17 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { Modal } from '@/components/ui/Modal';
 import { Rating } from '@/components/ui/Rating';
 import { formatDate } from '@/lib/utils';
+import { fetchAllPages } from '@/lib/exportAll';
+
+const REVIEW_EXPORT_COLUMNS = [
+  { key: 'name', label: 'Name' },
+  { key: 'email', label: 'Email' },
+  { key: 'rating', label: 'Rating' },
+  { key: 'status', label: 'Status' },
+  { key: 'review', label: 'Review' },
+  { key: 'property.title', label: 'Property' },
+  { key: 'createdAt', label: 'Submitted', format: (v) => formatDate(v) },
+];
 
 export default function Reviews() {
   const [items, setItems] = useState([]);
@@ -66,6 +78,14 @@ export default function Reviews() {
       <PageHeader
         title="Reviews"
         description={`${meta.total} reviews collected`}
+        actions={
+          <ExportMenu
+            getData={() => fetchAllPages(reviewService.list, { search, status })}
+            columns={REVIEW_EXPORT_COLUMNS}
+            filename="reviews"
+            title="Customer Reviews"
+          />
+        }
       />
 
       <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-slate-200/70 dark:border-white/10 shadow-card overflow-hidden">

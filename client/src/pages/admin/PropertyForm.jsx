@@ -1,16 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
-import { ArrowLeft, Upload, X } from 'lucide-react';
+import {
+  ArrowLeft, Upload, X, FileDown, QrCode, Calculator,
+  RotateCcw, AlertTriangle, Sparkles, CheckCircle2, Circle,
+} from 'lucide-react';
 import { propertyService } from '@/services/property.service';
 import { PageHeader } from '@/components/admin/PageHeader';
 import { Input, Textarea, Select } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Spinner';
 import { propertyTypeLabels } from '@/lib/utils';
+import { generatePropertyBrochure } from '@/lib/propertyBrochure';
+import { scoreListing, QUALITY_STYLE } from '@/lib/listingQuality';
+import { draftStore } from '@/lib/draftStore';
 
 const schema = z.object({
   title: z.string().min(3, 'Min 3 characters').max(160),
@@ -68,21 +74,32 @@ export default function PropertyForm() {
   const [existingImages, setExistingImages] = useState([]);
   const [newImages, setNewImages] = useState([]); // File[]
   const [removeImages, setRemoveImages] = useState([]); // publicIds
+  const [property, setProperty] = useState(null);
+  const [pendingDraft, setPendingDraft] = useState(null);
+  const [duplicates, setDuplicates] = useState([]);
+
+  const draftKey = isEdit ? `property:${id}` : 'property:new';
 
   const {
     register,
     handleSubmit,
     reset,
     control,
-    formState: { errors, isSubmitting },
+    watch,
+    formState: { errors, isSubmitting, isDirty },
   } = useForm({ resolver: zodResolver(schema), defaultValues: defaults });
 
   useEffect(() => {
-    if (!isEdit) return;
+    if (!isEdit) {
+      const draft = draftStore.load(draftKey);
+      if (draft?.data) setPendingDraft(draft);
+      return;
+    }
     propertyService
       .get(id)
       .then((res) => {
         const p = res.data;
+        setProperty(p);
         reset({
           ...defaults,
           ...p,
@@ -90,10 +107,68 @@ export default function PropertyForm() {
           yearBuilt: p.yearBuilt || '',
         });
         setExistingImages(p.images || []);
+        // Offer to restore a draft only if it's newer than the server record.
+        const draft = draftStore.load(draftKey);
+        if (draft?.savedAt && new Date(p.updatedAt || p.createdAt).getTime() < draft.savedAt) {
+          setPendingDraft(draft);
+        }
       })
       .catch(() => toast.error('Property not found'))
       .finally(() => setLoading(false));
-  }, [id, isEdit, reset]);
+  }, [id, isEdit, reset, draftKey]);
+
+  // Auto-save draft on every change (debounced via 1.2s).
+  const watched = watch();
+  const saveTimer = useRef(null);
+  useEffect(() => {
+    if (loading) return;
+    if (!isDirty) return;
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      draftStore.save(draftKey, watched);
+    }, 1200);
+    return () => clearTimeout(saveTimer.current);
+  }, [watched, isDirty, draftKey, loading]);
+
+  // Duplicate detection — only when creating a new listing.
+  const dupTimer = useRef(null);
+  const watchedTitle = watch('title');
+  const watchedCity = watch('city');
+  useEffect(() => {
+    if (isEdit) return;
+    const t = String(watchedTitle || '').trim();
+    if (t.length < 6) { setDuplicates([]); return; }
+    clearTimeout(dupTimer.current);
+    dupTimer.current = setTimeout(async () => {
+      try {
+        const res = await propertyService.list({ search: t, limit: 5 });
+        const found = (res.data || []).filter(
+          (p) => !watchedCity || p.city?.toLowerCase() === watchedCity.toLowerCase()
+        );
+        setDuplicates(found.slice(0, 3));
+      } catch {
+        setDuplicates([]);
+      }
+    }, 600);
+    return () => clearTimeout(dupTimer.current);
+  }, [watchedTitle, watchedCity, isEdit]);
+
+  const restoreDraft = () => {
+    if (!pendingDraft?.data) return;
+    reset(pendingDraft.data);
+    setPendingDraft(null);
+    toast.success('Draft restored');
+  };
+
+  const discardDraft = () => {
+    draftStore.clear(draftKey);
+    setPendingDraft(null);
+  };
+
+  const quality = useMemo(
+    () => scoreListing(watched, { existingImages, newImages }),
+    [watched, existingImages, newImages]
+  );
 
   const onFiles = (files) => {
     const arr = Array.from(files).slice(0, 12 - newImages.length - existingImages.length);
@@ -134,6 +209,7 @@ export default function PropertyForm() {
         await propertyService.create(fd);
         toast.success('Property created');
       }
+      draftStore.clear(draftKey);
       navigate('/admin/properties');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Save failed');
@@ -155,12 +231,102 @@ export default function PropertyForm() {
         <ArrowLeft size={14} /> Back to properties
       </Link>
 
+      {pendingDraft && (
+        <div className="mb-4 flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-brand-200/70 bg-brand-50 dark:bg-brand-500/10 dark:border-brand-400/30">
+          <RotateCcw size={18} className="text-brand-600" />
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-brand-800 dark:text-brand-200 text-sm">
+              Unsaved draft from {new Date(pendingDraft.savedAt).toLocaleString()}
+            </div>
+            <div className="text-xs text-brand-600 dark:text-brand-300">
+              We auto-saved your last edits. Restore them or start fresh.
+            </div>
+          </div>
+          <button onClick={discardDraft} className="text-sm font-medium text-slate-500 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white">
+            Discard
+          </button>
+          <button onClick={restoreDraft} className="btn-primary text-sm py-1.5">
+            Restore draft
+          </button>
+        </div>
+      )}
+
+      {!isEdit && duplicates.length > 0 && (
+        <div className="mb-4 p-4 rounded-2xl border border-amber-200 bg-amber-50 dark:bg-amber-500/10 dark:border-amber-400/30">
+          <div className="flex items-center gap-2 mb-2">
+            <AlertTriangle size={16} className="text-amber-600" />
+            <div className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+              Possible duplicate{duplicates.length === 1 ? '' : 's'} found
+            </div>
+          </div>
+          <ul className="space-y-1.5 ml-6 text-sm">
+            {duplicates.map((d) => (
+              <li key={d._id}>
+                <Link
+                  to={`/admin/properties/${d._id}/edit`}
+                  className="text-amber-700 dark:text-amber-200 hover:underline"
+                >
+                  {d.title}
+                </Link>
+                <span className="text-xs text-amber-600/70 dark:text-amber-300/70 ml-2">
+                  {d.city}, {d.state} · {d.status}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <PageHeader
         title={isEdit ? 'Edit Property' : 'Add Property'}
         description={isEdit ? 'Update the property details and images' : 'Create a new property listing'}
+        actions={
+          isEdit && property ? (
+            <>
+              <button
+                type="button"
+                onClick={() =>
+                  window.dispatchEvent(
+                    new CustomEvent('tools:open-emi', {
+                      detail: { principal: property.price, title: property.title },
+                    })
+                  )
+                }
+                className="btn-outline gap-2"
+              >
+                <Calculator size={16} /> EMI
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  window.dispatchEvent(
+                    new CustomEvent('tools:open-qr', {
+                      detail: {
+                        url: `${window.location.origin}/properties/${property._id}`,
+                        title: property.title,
+                      },
+                    })
+                  )
+                }
+                className="btn-outline gap-2"
+              >
+                <QrCode size={16} /> QR Code
+              </button>
+              <button
+                type="button"
+                onClick={() => generatePropertyBrochure(property)}
+                className="btn-outline gap-2"
+              >
+                <FileDown size={16} /> Brochure
+              </button>
+            </>
+          ) : null
+        }
       />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <QualityPanel quality={quality} />
+
         {/* Basic */}
         <Section title="Basic Information">
           <Input label="Title *" placeholder="3BHK Luxury Apartment in Bandra" {...register('title')} error={errors.title?.message} />
@@ -315,6 +481,59 @@ function Section({ title, children }) {
     <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-slate-200/70 dark:border-white/10 shadow-card p-5 space-y-4">
       <h3 className="font-display font-bold text-lg">{title}</h3>
       {children}
+    </div>
+  );
+}
+
+function QualityPanel({ quality }) {
+  const style = QUALITY_STYLE[quality.tier];
+  const failing = quality.checks.filter((c) => !c.ok);
+  return (
+    <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-slate-200/70 dark:border-white/10 shadow-card p-5">
+      <div className="flex items-start gap-4">
+        <div className="relative w-20 h-20 shrink-0">
+          <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+            <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e2e8f0" strokeWidth="3" />
+            <circle
+              cx="18" cy="18" r="15.9" fill="none"
+              stroke="currentColor"
+              className={style.text}
+              strokeWidth="3" strokeLinecap="round"
+              strokeDasharray={`${quality.score} 100`}
+            />
+          </svg>
+          <div className={`absolute inset-0 grid place-items-center font-display font-extrabold text-lg ${style.text}`}>
+            {quality.score}
+          </div>
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <Sparkles size={16} className="text-brand-500" />
+            <h3 className="font-display font-bold text-lg">Listing Quality</h3>
+            <span className={`chip text-[10px] font-bold uppercase tracking-wider ring-1 ${style.bg} ${style.text} ${style.ring}`}>
+              {style.label}
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Improve this score before publishing — better listings get more inquiries.
+          </p>
+          {failing.length > 0 && (
+            <div className="mt-3 grid sm:grid-cols-2 gap-x-4 gap-y-1.5">
+              {failing.slice(0, 6).map((c) => (
+                <div key={c.id} className="flex items-start gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+                  <Circle size={12} className="text-slate-300 mt-0.5 shrink-0" />
+                  <span>{c.label}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {failing.length === 0 && (
+            <div className="mt-3 flex items-center gap-1.5 text-xs text-emerald-600">
+              <CheckCircle2 size={14} /> All checks passing — ready to publish.
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -23,7 +23,8 @@ const AdminProperties = lazy(() => import('@/pages/admin/Properties'));
 const PropertyForm = lazy(() => import('@/pages/admin/PropertyForm'));
 const Inquiries = lazy(() => import('@/pages/admin/Inquiries'));
 const Reviews = lazy(() => import('@/pages/admin/Reviews'));
-const Users = lazy(() => import('@/pages/admin/Users'));
+const Admins = lazy(() => import('@/pages/admin/Admins'));
+const Agents = lazy(() => import('@/pages/admin/Agents'));
 const Settings = lazy(() => import('@/pages/admin/Settings'));
 const Events = lazy(() => import('@/pages/admin/Events'));
 
@@ -63,10 +64,18 @@ export default function App() {
           <Route path="events" element={<Events />} />
           <Route path="reviews" element={<Reviews />} />
           <Route
-            path="users"
+            path="admins"
             element={
               <ProtectedRoute roles={['super_admin', 'admin']}>
-                <Users />
+                <Admins />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="agents"
+            element={
+              <ProtectedRoute roles={['super_admin', 'admin']}>
+                <Agents />
               </ProtectedRoute>
             }
           />

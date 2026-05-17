@@ -29,6 +29,7 @@ exports.getStats = asyncHandler(async (req, res) => {
     recentInquiries,
     recentReviews,
     recentProperties,
+    topViewedProperties,
     upcomingEventsList,
   ] = await Promise.all([
     Property.countDocuments(),
@@ -61,6 +62,10 @@ exports.getStats = asyncHandler(async (req, res) => {
     Inquiry.find().sort({ createdAt: -1 }).limit(5).populate('property', 'title'),
     Review.find().sort({ createdAt: -1 }).limit(5),
     Property.find().sort({ createdAt: -1 }).limit(5),
+    Property.find({ views: { $gt: 0 } })
+      .sort({ views: -1, createdAt: -1 })
+      .limit(5)
+      .select('title city state price pricePeriod status propertyType images views featured'),
     Event.find({ isActive: true, startDate: { $gte: now } }).sort({ startDate: 1 }).limit(5),
   ]);
 
@@ -108,6 +113,7 @@ exports.getStats = asyncHandler(async (req, res) => {
         properties: recentProperties,
         events: upcomingEventsList,
       },
+      topViewedProperties,
     }, 'OK')
   );
 });
