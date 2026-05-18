@@ -1,3 +1,10 @@
+// Admin Event Management.
+// Full CRUD with:
+//   - Optional image upload (multipart/form-data)
+//   - Active toggle (drives the public popup)
+//   - Search + status filters + pagination
+//   - Card grid view
+
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -5,7 +12,7 @@ import { z } from 'zod';
 import toast from 'react-hot-toast';
 import {
   CalendarDays, Plus, Search, Pencil, Trash2, Zap,
-  Power, PowerOff, Sparkles,
+  Power, PowerOff, ImagePlus, X as XIcon, Sparkles,
 } from 'lucide-react';
 import { eventService } from '@/services/event.service';
 import { PageHeader } from '@/components/admin/PageHeader';
@@ -15,7 +22,6 @@ import { Skeleton } from '@/components/ui/Spinner';
 import { Pagination } from '@/components/ui/Pagination';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Modal } from '@/components/ui/Modal';
-import { Badge } from '@/components/ui/Badge';
 import { formatDate, cn } from '@/lib/utils';
 
 const schema = z.object({
@@ -27,6 +33,7 @@ const schema = z.object({
   discountPercent: z.coerce.number().min(0).max(100).optional(),
   color: z.string().optional(),
   isActive: z.boolean().optional(),
+  showAsPopup: z.boolean().optional(),
   autoTrigger: z.boolean().optional(),
 });
 
@@ -59,6 +66,11 @@ export default function Events() {
   const [deleting, setDeleting] = useState(null);
   const [busy, setBusy] = useState(false);
 
+  // Local form-only state for the picked image.
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const [removeImage, setRemoveImage] = useState(false);
+
   const fetchData = () => {
     setLoading(true);
     eventService
@@ -78,12 +90,20 @@ export default function Events() {
     defaultValues: {
       type: 'sale',
       isActive: true,
+      showAsPopup: true,
       autoTrigger: true,
       color: '#f97316',
     },
   });
 
+  const resetImageState = () => {
+    setImageFile(null);
+    setImagePreview('');
+    setRemoveImage(false);
+  };
+
   const openCreate = () => {
+    resetImageState();
     form.reset({
       title: '',
       description: '',
@@ -93,12 +113,15 @@ export default function Events() {
       discountPercent: 0,
       color: '#f97316',
       isActive: true,
+      showAsPopup: true,
       autoTrigger: true,
     });
     setCreating(true);
   };
 
   const openEdit = (ev) => {
+    resetImageState();
+    setImagePreview(ev.image?.url || '');
     form.reset({
       title: ev.title,
       description: ev.description || '',
@@ -108,28 +131,54 @@ export default function Events() {
       discountPercent: ev.discountPercent || 0,
       color: ev.color || '#f97316',
       isActive: ev.isActive,
+      showAsPopup: ev.showAsPopup ?? true,
       autoTrigger: ev.autoTrigger,
     });
     setEditing(ev);
   };
 
+  const onPickImage = (file) => {
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be under 5 MB');
+      return;
+    }
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+    setRemoveImage(false);
+  };
+
+  const closeModal = () => {
+    setCreating(false);
+    setEditing(null);
+    resetImageState();
+  };
+
   const onSubmit = async (data) => {
     setBusy(true);
     try {
-      const payload = {
-        ...data,
-        startDate: new Date(data.startDate).toISOString(),
-        endDate: data.endDate ? new Date(data.endDate).toISOString() : null,
-      };
+      const fd = new FormData();
+      fd.append('title', data.title);
+      fd.append('description', data.description || '');
+      fd.append('type', data.type);
+      fd.append('startDate', new Date(data.startDate).toISOString());
+      if (data.endDate) fd.append('endDate', new Date(data.endDate).toISOString());
+      fd.append('discountPercent', data.discountPercent || 0);
+      fd.append('color', data.color || '#f97316');
+      fd.append('isActive', data.isActive ?? true);
+      fd.append('showAsPopup', data.showAsPopup ?? true);
+      fd.append('autoTrigger', data.autoTrigger ?? true);
+      if (imageFile) fd.append('image', imageFile);
+      if (editing && removeImage) fd.append('removeImage', 'true');
+
       if (editing) {
-        await eventService.update(editing._id, payload);
+        await eventService.update(editing._id, fd);
         toast.success('Event updated');
       } else {
-        await eventService.create(payload);
+        await eventService.create(fd);
         toast.success('Event created');
       }
-      setCreating(false);
-      setEditing(null);
+      closeModal();
       fetchData();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Save failed');
@@ -233,7 +282,13 @@ export default function Events() {
         ) : (
           <div className="p-4 grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
             {items.map((ev) => (
-              <EventCard key={ev._id} event={ev} onEdit={() => openEdit(ev)} onToggle={() => toggle(ev)} onDelete={() => setDeleting(ev)} />
+              <EventCard
+                key={ev._id}
+                event={ev}
+                onEdit={() => openEdit(ev)}
+                onToggle={() => toggle(ev)}
+                onDelete={() => setDeleting(ev)}
+              />
             ))}
           </div>
         )}
@@ -246,12 +301,12 @@ export default function Events() {
       {/* CREATE / EDIT */}
       <Modal
         open={creating || !!editing}
-        onClose={() => { setCreating(false); setEditing(null); }}
+        onClose={closeModal}
         title={editing ? 'Edit Event' : 'New Event'}
         size="lg"
         footer={
           <>
-            <Button variant="ghost" onClick={() => { setCreating(false); setEditing(null); }}>Cancel</Button>
+            <Button variant="ghost" onClick={closeModal}>Cancel</Button>
             <Button onClick={form.handleSubmit(onSubmit)} loading={busy}>
               {editing ? 'Save Changes' : 'Create Event'}
             </Button>
@@ -268,9 +323,25 @@ export default function Events() {
           <Textarea
             label="Description"
             rows={3}
-            placeholder="What's happening on this day?"
+            placeholder="Tell visitors what's happening on this day."
             {...form.register('description')}
           />
+
+          {/* Optional image upload */}
+          <ImagePicker
+            preview={removeImage ? '' : imagePreview}
+            onPick={onPickImage}
+            onClear={() => {
+              if (imageFile) {
+                setImageFile(null);
+                setImagePreview(editing?.image?.url || '');
+              } else {
+                setImagePreview('');
+                setRemoveImage(!!editing?.image?.url);
+              }
+            }}
+          />
+
           <div className="grid sm:grid-cols-3 gap-4">
             <Select label="Type *" {...form.register('type')} onChange={(e) => {
               form.setValue('type', e.target.value);
@@ -301,6 +372,7 @@ export default function Events() {
               />
             </div>
           </div>
+
           <div className="grid sm:grid-cols-2 gap-4">
             <Input
               label="Start date & time *"
@@ -314,20 +386,16 @@ export default function Events() {
               {...form.register('endDate')}
             />
           </div>
-          <div className="flex items-center gap-6">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" className="w-4 h-4 accent-brand-600" {...form.register('isActive')} />
-              <span className="text-sm font-medium">Active</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" className="w-4 h-4 accent-accent-600" {...form.register('autoTrigger')} />
-              <span className="text-sm font-medium">Auto-trigger on start date</span>
-            </label>
+
+          <div className="grid sm:grid-cols-3 gap-3 pt-2">
+            <CheckLabel label="Active" {...form.register('isActive')} hint="Visible in lists & APIs" />
+            <CheckLabel label="Show as popup" {...form.register('showAsPopup')} hint="Appears as modal on website" />
+            <CheckLabel label="Auto-trigger" {...form.register('autoTrigger')} hint="Hook for scheduled side-effects" />
           </div>
         </form>
       </Modal>
 
-      {/* DELETE */}
+      {/* DELETE CONFIRM */}
       <Modal
         open={!!deleting}
         onClose={() => setDeleting(null)}
@@ -347,15 +415,26 @@ export default function Events() {
   );
 }
 
+// ---------- Sub-components ----------
+
 function EventCard({ event, onEdit, onToggle, onDelete }) {
   const status = STATUS_LABELS[event.status] || STATUS_LABELS.inactive;
   const accent = event.color || TYPE_COLORS[event.type] || '#f97316';
+  const img = event.image?.url;
   return (
     <div className="relative rounded-2xl border border-slate-200/70 overflow-hidden bg-white shadow-card">
-      <div className="h-24 relative" style={{ background: `linear-gradient(135deg, ${accent} 0%, ${shade(accent, -30)} 100%)` }}>
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.5),_transparent_60%)]" />
+      <div
+        className="h-28 relative overflow-hidden"
+        style={img ? undefined : { background: `linear-gradient(135deg, ${accent} 0%, ${shade(accent, -30)} 100%)` }}
+      >
+        {img && (
+          <>
+            <img src={img} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/30 to-transparent" />
+          </>
+        )}
         <div className="absolute top-3 left-3 flex gap-2">
-          <span className="chip bg-white/90 text-slate-800 capitalize text-[10px] font-bold uppercase tracking-wider">
+          <span className="chip bg-white/90 text-slate-800 text-[10px] font-bold uppercase tracking-wider">
             {event.type}
           </span>
           {event.discountPercent > 0 && (
@@ -364,7 +443,12 @@ function EventCard({ event, onEdit, onToggle, onDelete }) {
             </span>
           )}
         </div>
-        <div className="absolute top-3 right-3">
+        <div className="absolute top-3 right-3 flex gap-1.5">
+          {event.showAsPopup && (
+            <span className="chip bg-white/90 text-slate-800 text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1">
+              <Sparkles size={10} /> Popup
+            </span>
+          )}
           <span className={cn('chip text-[10px] font-bold uppercase tracking-wider', status.cls)}>
             {status.label}
           </span>
@@ -396,6 +480,52 @@ function EventCard({ event, onEdit, onToggle, onDelete }) {
     </div>
   );
 }
+
+function ImagePicker({ preview, onPick, onClear }) {
+  return (
+    <div>
+      <label className="label">Image (optional)</label>
+      {preview ? (
+        <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+          <img src={preview} alt="" className="w-full max-h-56 object-cover" />
+          <button
+            type="button"
+            onClick={onClear}
+            className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/95 hover:bg-white shadow grid place-items-center text-slate-700"
+            aria-label="Remove image"
+          >
+            <XIcon size={15} />
+          </button>
+        </div>
+      ) : (
+        <label className="flex items-center justify-center gap-2 px-4 py-6 rounded-xl border-2 border-dashed border-slate-300 text-slate-500 hover:border-brand-400 hover:text-brand-600 cursor-pointer transition">
+          <ImagePlus size={18} />
+          <span className="text-sm">Click to upload (jpg / png / webp, max 5 MB)</span>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={(e) => onPick(e.target.files?.[0])}
+          />
+        </label>
+      )}
+    </div>
+  );
+}
+
+function CheckLabel({ label, hint, ...rest }) {
+  return (
+    <label className="flex items-start gap-2 cursor-pointer p-3 rounded-xl border border-slate-200 hover:border-brand-300 transition">
+      <input type="checkbox" className="mt-0.5 w-4 h-4 accent-brand-600" {...rest} />
+      <div className="leading-tight">
+        <div className="text-sm font-medium">{label}</div>
+        {hint && <div className="text-[11px] text-slate-500 mt-0.5">{hint}</div>}
+      </div>
+    </label>
+  );
+}
+
+// ---------- Helpers ----------
 
 function toLocalInput(iso) {
   const d = new Date(iso);

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Building2, MessageSquare, Star, ShieldCheck, UserCog,
   Settings, ArrowLeft, LogOut, ChevronRight, Zap, X,
-  CalendarDays,
+  CalendarDays, Users,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
@@ -32,6 +32,7 @@ const groups = [
   {
     label: 'Team',
     items: [
+      { to: '/admin/users', icon: Users, label: 'Users', roles: ['super_admin', 'admin'] },
       { to: '/admin/admins', icon: ShieldCheck, label: 'Admins', roles: ['super_admin', 'admin'] },
       { to: '/admin/agents', icon: UserCog, label: 'Agents', roles: ['super_admin', 'admin'] },
     ],

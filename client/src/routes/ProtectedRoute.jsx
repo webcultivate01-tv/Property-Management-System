@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { FullPageLoader } from '@/components/ui/Spinner';
 
 export function ProtectedRoute({ children, roles }) {

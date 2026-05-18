@@ -6,7 +6,7 @@ import { PageHeader } from '@/components/admin/PageHeader';
 import { Input, Textarea } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Spinner';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { userService } from '@/services/user.service';
 
 export default function Settings() {

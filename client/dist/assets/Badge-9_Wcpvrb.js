@@ -1,0 +1,1 @@
+import{k as t,b as r,s as i}from"./index-D76mUYUk.js";function n({status:a,className:e,children:s}){return t.jsx("span",{className:r("chip capitalize",a?i[a]:"bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-200",e),children:s||a})}export{n as B};

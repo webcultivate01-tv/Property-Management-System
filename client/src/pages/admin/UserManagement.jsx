@@ -4,10 +4,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
-  Search, Plus, Pencil, Trash2, UserCog, ShieldCheck, ShieldOff,
+  Search, Plus, Pencil, Trash2, UserCog, ShieldCheck, ShieldOff, RefreshCw,
 } from 'lucide-react';
 import { userService } from '@/services/user.service';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { PageHeader } from '@/components/admin/PageHeader';
 import { ExportMenu } from '@/components/admin/ExportMenu';
 import { Button } from '@/components/ui/Button';
@@ -23,6 +23,7 @@ const ROLE_LABEL = {
   super_admin: 'Super Admin',
   admin: 'Admin',
   agent: 'Agent',
+  user: 'User',
 };
 
 /**
@@ -47,6 +48,7 @@ export default function UserManagement({
   emptyTitle = 'No records yet',
   exportFilename = 'users',
   exportTitle = 'Team Members',
+  allowSyncFromInquiries = false,
 }) {
   const { user: me } = useAuth();
   const [items, setItems] = useState([]);
@@ -159,6 +161,23 @@ export default function UserManagement({
     }
   };
 
+  const [syncing, setSyncing] = useState(false);
+  const syncFromInquiries = async () => {
+    setSyncing(true);
+    try {
+      const res = await userService.syncFromInquiries();
+      const { created = 0, updated = 0, uniqueEmails = 0 } = res.data || {};
+      toast.success(
+        `Synced ${uniqueEmails} unique email${uniqueEmails === 1 ? '' : 's'} · ${created} created, ${updated} updated`
+      );
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Sync failed');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   const toggleActive = async (u) => {
     try {
       await userService.update(u._id, { isActive: !u.isActive });
@@ -184,7 +203,10 @@ export default function UserManagement({
       ? description(meta.total)
       : description || `${meta.total} member(s)`;
 
-  const canCreate = me?.role === 'super_admin';
+  // Admins can create staff/customers. Only super_admin can create another super_admin
+  // (the server enforces this — we just hide the button if there's nothing to do).
+  const canCreate = me && ['super_admin', 'admin'].includes(me.role);
+  const canDelete = me && ['super_admin', 'admin'].includes(me.role);
 
   return (
     <div>
@@ -193,6 +215,11 @@ export default function UserManagement({
         description={desc}
         actions={
           <>
+            {allowSyncFromInquiries && (
+              <Button variant="outline" onClick={syncFromInquiries} loading={syncing}>
+                <RefreshCw size={16} /> Sync from Inquiries
+              </Button>
+            )}
             <ExportMenu
               getData={() => fetchAllPages(userService.list, { search, roles: rolesParam })}
               columns={exportColumns}
@@ -231,9 +258,10 @@ export default function UserManagement({
               <thead className="bg-slate-50 dark:bg-white/[0.02] text-xs uppercase tracking-wider text-slate-500">
                 <tr>
                   <th className="text-left px-4 py-3 font-semibold">Member</th>
+                  <th className="text-left px-4 py-3 font-semibold hidden md:table-cell">Phone</th>
                   <th className="text-left px-4 py-3 font-semibold">Role</th>
                   <th className="text-left px-4 py-3 font-semibold">Status</th>
-                  <th className="text-left px-4 py-3 font-semibold">Joined</th>
+                  <th className="text-left px-4 py-3 font-semibold hidden lg:table-cell">Joined</th>
                   <th className="text-right px-4 py-3 font-semibold">Actions</th>
                 </tr>
               </thead>
@@ -251,13 +279,16 @@ export default function UserManagement({
                         </div>
                       </div>
                     </td>
+                    <td className="px-4 py-3 hidden md:table-cell text-slate-500">{u.phone || '—'}</td>
                     <td className="px-4 py-3">
                       <span className={`chip ${
                         u.role === 'super_admin'
                           ? 'bg-accent-100 text-accent-700 dark:bg-accent-500/15 dark:text-accent-300'
                           : u.role === 'agent'
                             ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
-                            : 'bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300'
+                            : u.role === 'user'
+                              ? 'bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300'
+                              : 'bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300'
                       }`}>
                         {ROLE_LABEL[u.role] || u.role.replace('_', ' ')}
                       </span>
@@ -267,7 +298,7 @@ export default function UserManagement({
                         {u.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-500">{formatDate(u.createdAt)}</td>
+                    <td className="px-4 py-3 hidden lg:table-cell text-slate-500">{formatDate(u.createdAt)}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1.5">
                         <button onClick={() => toggleActive(u)} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5" title="Toggle active">
@@ -276,7 +307,7 @@ export default function UserManagement({
                         <button onClick={() => openEdit(u)} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5" title="Edit">
                           <Pencil size={15} />
                         </button>
-                        {me?.role === 'super_admin' && me._id !== u._id && (
+                        {canDelete && me._id !== u._id && u.role !== 'super_admin' && (
                           <button onClick={() => setDeleting(u)} className="p-2 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10" title="Delete">
                             <Trash2 size={15} />
                           </button>

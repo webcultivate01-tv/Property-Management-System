@@ -8,7 +8,7 @@ import { Mail, Lock, AlertCircle } from 'lucide-react';
 import { AuthShell } from '@/components/auth/AuthShell';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 
 const schema = z.object({
   email: z.string().email('Valid email required'),
@@ -30,10 +30,13 @@ export default function Login() {
   const onSubmit = async (data) => {
     setServerError('');
     try {
-      await login(data.email, data.password);
+      const user = await login(data.email, data.password);
       toast.success('Welcome back!');
-      const from = location.state?.from?.pathname || '/admin';
-      navigate(from, { replace: true });
+
+      // Send admins/agents to the admin panel; regular users back home.
+      const fallback = ['super_admin', 'admin', 'agent'].includes(user?.role) ? '/admin' : '/';
+      const target = location.state?.from?.pathname || fallback;
+      navigate(target, { replace: true });
     } catch (err) {
       const msg =
         err.response?.data?.message ||
@@ -51,12 +54,9 @@ export default function Login() {
       title="Sign in"
       subtitle="Welcome back — please enter your credentials."
       footer={
-        <>
-          Don't have an account?{' '}
-          <Link to="/register" className="text-brand-600 font-semibold hover:underline">
-            Create one
-          </Link>
-        </>
+        <span className="text-xs text-slate-500">
+          New accounts are created by your administrator.
+        </span>
       }
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

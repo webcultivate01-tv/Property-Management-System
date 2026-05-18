@@ -1,3 +1,7 @@
+// Authentication slice.
+// Public signup has been removed for security — only admins create accounts.
+// Bootstrap re-validates the access token on app load.
+
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/lib/api';
 
@@ -7,16 +11,19 @@ const initialState = {
   error: null,
 };
 
-export const bootstrapAuth = createAsyncThunk('auth/bootstrap', async (_, { rejectWithValue }) => {
-  const token = localStorage.getItem('accessToken');
-  if (!token) return null;
-  try {
-    const { data } = await api.get('/auth/me');
-    return data.data?.user || null;
-  } catch (err) {
-    return rejectWithValue(err.response?.data?.message || 'Unauthorized');
+export const bootstrapAuth = createAsyncThunk(
+  'auth/bootstrap',
+  async (_, { rejectWithValue }) => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return null;
+    try {
+      const { data } = await api.get('/auth/me');
+      return data.data?.user || null;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || 'Unauthorized');
+    }
   }
-});
+);
 
 export const loginThunk = createAsyncThunk(
   'auth/login',
@@ -32,22 +39,8 @@ export const loginThunk = createAsyncThunk(
   }
 );
 
-export const registerThunk = createAsyncThunk(
-  'auth/register',
-  async (payload, { rejectWithValue }) => {
-    try {
-      const { data } = await api.post('/auth/register', payload);
-      const { user, accessToken } = data.data;
-      if (accessToken) localStorage.setItem('accessToken', accessToken);
-      return user;
-    } catch (err) {
-      return rejectWithValue(err.response?.data?.message || 'Registration failed');
-    }
-  }
-);
-
 export const logoutThunk = createAsyncThunk('auth/logout', async () => {
-  try { await api.post('/auth/logout'); } catch {}
+  try { await api.post('/auth/logout'); } catch { /* ignore */ }
   localStorage.removeItem('accessToken');
 });
 
@@ -73,9 +66,6 @@ const authSlice = createSlice({
       .addCase(loginThunk.pending, (state) => { state.error = null; })
       .addCase(loginThunk.fulfilled, (state, action) => { state.user = action.payload; })
       .addCase(loginThunk.rejected, (state, action) => { state.error = action.payload; })
-
-      .addCase(registerThunk.fulfilled, (state, action) => { state.user = action.payload; })
-      .addCase(registerThunk.rejected, (state, action) => { state.error = action.payload; })
 
       .addCase(logoutThunk.fulfilled, (state) => { state.user = null; });
   },

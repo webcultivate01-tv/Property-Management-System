@@ -1,5 +1,8 @@
+// Tiny convenience hook over the Redux auth slice.
+// Public sign-up has been removed — accounts are created from the admin panel.
+
 import { useDispatch, useSelector } from 'react-redux';
-import { loginThunk, registerThunk, logoutThunk, bootstrapAuth } from '@/store/slices/authSlice';
+import { loginThunk, logoutThunk, bootstrapAuth } from '@/store/slices/authSlice';
 
 export function useAuth() {
   const dispatch = useDispatch();
@@ -8,11 +11,9 @@ export function useAuth() {
   const login = (email, password) =>
     dispatch(loginThunk({ email, password })).unwrap();
 
-  const register = (payload) => dispatch(registerThunk(payload)).unwrap();
-
   const logout = () => dispatch(logoutThunk());
 
   const refresh = () => dispatch(bootstrapAuth());
 
-  return { user, loading, error, login, register, logout, refresh };
+  return { user, loading, error, login, logout, refresh };
 }

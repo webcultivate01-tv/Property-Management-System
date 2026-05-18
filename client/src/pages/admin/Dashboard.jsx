@@ -84,11 +84,12 @@ export default function Dashboard() {
       </div>
 
       {/* PRIMARY STATS */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard index={0} icon={Building2}      label="Total Properties" value={c.totalProperties || 0} accent="brand" />
         <StatCard index={1} icon={MessageSquare}  label="Total Inquiries"  value={c.totalInquiries || 0}  accent="emerald" />
-        <StatCard index={2} icon={Star}           label="Total Reviews"    value={c.totalReviews || 0}    accent="amber" />
-        <StatCard index={3} icon={CalendarDays}   label="Active Events"    value={c.liveEvents || 0}      accent="accent" />
+        <StatCard index={2} icon={Users}          label="Total Users"      value={c.totalCustomers || 0}  accent="violet" />
+        <StatCard index={3} icon={Star}           label="Total Reviews"    value={c.totalReviews || 0}    accent="amber" />
+        <StatCard index={4} icon={CalendarDays}   label="Active Events"    value={c.liveEvents || 0}      accent="accent" />
       </div>
 
       {/* SECONDARY STATS */}
@@ -96,7 +97,7 @@ export default function Dashboard() {
         <MiniStat icon={Sparkles} label="Featured properties" value={c.featuredProperties || 0} accent="accent" />
         <MiniStat icon={Eye}      label="Available now"       value={c.availableProperties || 0} accent="emerald" />
         <MiniStat icon={Activity} label="New inquiries"       value={c.newInquiries || 0} accent="brand" />
-        <MiniStat icon={Users}    label="Team members"        value={c.totalUsers || 0} accent="violet" />
+        <MiniStat icon={Users}    label="Team members"        value={c.totalStaff || 0} accent="violet" />
       </div>
 
       <NeedsAttention stats={stats} />

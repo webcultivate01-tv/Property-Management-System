@@ -157,14 +157,8 @@ export default function Properties() {
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10">
-          <img
-            src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=2000&q=80"
-            alt=""
-            className="w-full h-full object-cover opacity-30 dark:opacity-20"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/95 to-white dark:from-surface-darker/80 dark:via-surface-darker/95 dark:to-surface-darker" />
-          <div className="absolute -top-20 -left-20 w-[500px] h-[500px] bg-brand-500/15 rounded-full blur-3xl" />
-          <div className="absolute -bottom-20 -right-20 w-[500px] h-[500px] bg-accent-500/15 rounded-full blur-3xl" />
+          <div className="absolute -top-32 -left-20 w-[600px] h-[600px] bg-brand-500/20 rounded-full blur-3xl" />
+          <div className="absolute top-20 -right-20 w-[500px] h-[500px] bg-accent-500/15 rounded-full blur-3xl" />
         </div>
 
         <div className="container-x pt-14 md:pt-20 pb-10 text-center">

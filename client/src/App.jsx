@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { FullPageLoader } from '@/components/ui/Spinner';
 import { ProtectedRoute } from '@/routes/ProtectedRoute';
@@ -14,7 +14,6 @@ const PropertyDetail = lazy(() => import('@/pages/public/PropertyDetail'));
 const Contact = lazy(() => import('@/pages/public/Contact'));
 
 const Login = lazy(() => import('@/pages/auth/Login'));
-const Register = lazy(() => import('@/pages/auth/Register'));
 const ForgotPassword = lazy(() => import('@/pages/auth/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/pages/auth/ResetPassword'));
 
@@ -25,6 +24,7 @@ const Inquiries = lazy(() => import('@/pages/admin/Inquiries'));
 const Reviews = lazy(() => import('@/pages/admin/Reviews'));
 const Admins = lazy(() => import('@/pages/admin/Admins'));
 const Agents = lazy(() => import('@/pages/admin/Agents'));
+const Users = lazy(() => import('@/pages/admin/Users'));
 const Settings = lazy(() => import('@/pages/admin/Settings'));
 const Events = lazy(() => import('@/pages/admin/Events'));
 
@@ -44,7 +44,8 @@ export default function App() {
         </Route>
 
         <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
+        {/* Public signup is intentionally disabled — only admins can create accounts. */}
+        <Route path="register" element={<Navigate to="/login" replace />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="reset-password/:token" element={<ResetPassword />} />
 
@@ -63,6 +64,14 @@ export default function App() {
           <Route path="inquiries" element={<Inquiries />} />
           <Route path="events" element={<Events />} />
           <Route path="reviews" element={<Reviews />} />
+          <Route
+            path="users"
+            element={
+              <ProtectedRoute roles={['super_admin', 'admin']}>
+                <Users />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="admins"
             element={
