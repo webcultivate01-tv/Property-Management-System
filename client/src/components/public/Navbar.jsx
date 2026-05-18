@@ -105,8 +105,30 @@ export default function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.3 }}
-              className="lg:hidden fixed top-16 md:top-20 right-0 bottom-0 w-64 bg-white dark:bg-surface-darker shadow-2xl overflow-y-auto"
+              className="lg:hidden fixed top-0 right-0 bottom-0 w-64 bg-white dark:bg-surface-darker shadow-2xl overflow-y-auto z-50"
             >
+              {/* Mobile Menu Header */}
+              <div className="p-4 border-b border-slate-200 dark:border-white/5 flex items-center justify-between">
+                <Link to="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
+                  <div className="w-9 h-9 rounded-xl bg-brand-gradient grid place-items-center shadow-soft">
+                    <Building2 size={18} className="text-white" />
+                  </div>
+                  <div className="leading-tight">
+                    <div className="font-display font-extrabold text-base">Telvine</div>
+                    <div className="text-[9px] uppercase tracking-widest text-slate-500 dark:text-slate-400 -mt-0.5">
+                      Realty
+                    </div>
+                  </div>
+                </Link>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5"
+                  aria-label="Close menu"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
               <div className="py-4 px-3 flex flex-col gap-1">
                 {links.map((l) => (
                   <NavLink

@@ -6,20 +6,19 @@ import {
   TrendingUp, Award, Shield, Key, Home as HomeIcon, Scale,
   CheckCircle2, BadgeCheck, Headphones, Lock, FileText, Sparkles,
   MapPin, ChevronDown, Building, Warehouse, Hotel, Trees,
-  Briefcase, Phone, ArrowUpRight, Clock,
+  Briefcase, Phone, ArrowUpRight, Clock, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { propertyService } from '@/services/property.service';
 import { reviewService } from '@/services/review.service';
 import { PropertyCard } from '@/components/public/PropertyCard';
 import { SectionHeader } from '@/components/public/SectionHeader';
 import { Skeleton } from '@/components/ui/Spinner';
-import { Rating } from '@/components/ui/Rating';
 
 const CITIES = [
   { name: 'Mumbai', listings: '2,140+', img: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=900&q=80' },
   { name: 'Bengaluru', listings: '1,820+', img: 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?w=900&q=80' },
   { name: 'Delhi NCR', listings: '1,640+', img: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=900&q=80' },
-  { name: 'Pune', listings: '980+', img: 'https://images.unsplash.com/photo-1599661046827-dacde6976549?w=900&q=80' },
+  { name: 'Pune', listings: '980+', img: 'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?w=900&q=80' },
   { name: 'Hyderabad', listings: '870+', img: 'https://images.unsplash.com/photo-1572883454114-1cf0031ede2a?w=900&q=80' },
   { name: 'Chennai', listings: '720+', img: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=900&q=80' },
   { name: 'Kolkata', listings: '610+', img: 'https://images.unsplash.com/photo-1558431382-27e303142255?w=900&q=80' },
@@ -27,21 +26,87 @@ const CITIES = [
 ];
 
 const PROPERTY_TYPES = [
-  { label: 'Apartments', icon: Building, query: 'apartment', count: '5,200+ listings' },
-  { label: 'Villas', icon: HomeIcon, query: 'villa', count: '1,400+ listings' },
-  { label: 'Plots & Land', icon: Trees, query: 'plot', count: '980+ listings' },
-  { label: 'Commercial', icon: Briefcase, query: 'commercial', count: '760+ listings' },
-  { label: 'Office Space', icon: Warehouse, query: 'office', count: '510+ listings' },
-  { label: 'PG / Co-living', icon: Hotel, query: 'pg', count: '320+ listings' },
+  { 
+    label: 'Apartments', 
+    icon: Building, 
+    query: 'apartment', 
+    count: '5,200+ listings',
+    img: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&auto=format&fit=crop&q=80'
+  },
+  { 
+    label: 'Villas', 
+    icon: HomeIcon, 
+    query: 'villa', 
+    count: '1,400+ listings',
+    img: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&auto=format&fit=crop&q=80'
+  },
+  { 
+    label: 'Plots & Land', 
+    icon: Trees, 
+    query: 'plot', 
+    count: '980+ listings',
+    img: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&auto=format&fit=crop&q=80'
+  },
+  { 
+    label: 'Commercial', 
+    icon: Briefcase, 
+    query: 'commercial', 
+    count: '760+ listings',
+    img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&auto=format&fit=crop&q=80'
+  },
+  { 
+    label: 'Office Space', 
+    icon: Warehouse, 
+    query: 'office', 
+    count: '510+ listings',
+    img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&auto=format&fit=crop&q=80'
+  },
+  { 
+    label: 'PG / Co-living', 
+    icon: Hotel, 
+    query: 'pg', 
+    count: '320+ listings',
+    img: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&auto=format&fit=crop&q=80'
+  },
 ];
 
 const WHY_US = [
-  { icon: BadgeCheck, t: 'RERA-verified listings', d: 'Every property goes through a strict 7-point verification before going live.' },
-  { icon: Headphones, t: 'Dedicated relationship manager', d: 'One advisor handles your journey end-to-end — no transfers, no repeats.' },
-  { icon: Lock, t: 'Zero brokerage on select homes', d: 'Owner-direct listings save lakhs on the closing — clearly marked on each card.' },
-  { icon: FileText, t: 'Legal & paperwork support', d: 'Title checks, sale deeds and registration handled by in-house legal experts.' },
-  { icon: TrendingUp, t: 'Free market intelligence', d: 'Real-time price trends, locality scores and rental yields on every listing.' },
-  { icon: Sparkles, t: 'Move-in support', d: 'Packers, painters, deep cleaning — all coordinated with one phone call.' },
+  { 
+    icon: BadgeCheck, 
+    t: 'RERA-verified listings', 
+    d: 'Every property goes through a strict 7-point verification before going live.',
+    img: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=600&auto=format&fit=crop&q=80'
+  },
+  { 
+    icon: Headphones, 
+    t: 'Dedicated relationship manager', 
+    d: 'One advisor handles your journey end-to-end — no transfers, no repeats.',
+    img: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=600&auto=format&fit=crop&q=80'
+  },
+  { 
+    icon: Lock, 
+    t: 'Zero brokerage on select homes', 
+    d: 'Owner-direct listings save lakhs on the closing — clearly marked on each card.',
+    img: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&auto=format&fit=crop&q=80'
+  },
+  { 
+    icon: FileText, 
+    t: 'Legal & paperwork support', 
+    d: 'Title checks, sale deeds and registration handled by in-house legal experts.',
+    img: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&auto=format&fit=crop&q=80'
+  },
+  { 
+    icon: TrendingUp, 
+    t: 'Free market intelligence', 
+    d: 'Real-time price trends, locality scores and rental yields on every listing.',
+    img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=80'
+  },
+  { 
+    icon: Sparkles, 
+    t: 'Move-in support', 
+    d: 'Packers, painters, deep cleaning — all coordinated with one phone call.',
+    img: 'https://images.unsplash.com/photo-1527689368864-3a821dbccc34?w=600&auto=format&fit=crop&q=80'
+  },
 ];
 
 const HOW_IT_WORKS = [
@@ -125,102 +190,46 @@ export default function Home() {
   return (
     <div>
       {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute -top-32 -left-20 w-[600px] h-[600px] bg-brand-500/20 rounded-full blur-3xl" />
-          <div className="absolute top-20 -right-20 w-[500px] h-[500px] bg-accent-500/15 rounded-full blur-3xl" />
-        </div>
-        <div className="container-x py-16 md:py-24 grid lg:grid-cols-2 gap-12 items-center">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300 text-xs font-semibold uppercase tracking-widest mb-6">
+      <section className="relative overflow-hidden min-h-[600px] md:min-h-[700px] flex items-center">
+        {/* Background Image Carousel */}
+        <BackgroundCarousel />
+
+        <div className="container-x py-16 md:py-24 relative z-20">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl mx-auto text-center"
+          >
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white text-xs font-semibold uppercase tracking-widest mb-6">
               <Award size={14} /> #1 Premium Real Estate Platform
             </span>
-            <h1 className="font-display font-extrabold text-4xl md:text-6xl leading-[1.05] tracking-tight">
+            <h1 className="font-display font-extrabold text-4xl md:text-5xl lg:text-7xl leading-[1.05] tracking-tight text-white">
               Find your dream
-              <span className="block bg-gradient-to-r from-brand-600 via-accent-500 to-brand-600 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-brand-300 via-accent-300 to-brand-300 bg-clip-text text-transparent mt-2">
                 home, beautifully.
               </span>
             </h1>
-            <p className="mt-6 text-slate-600 dark:text-slate-400 text-lg leading-relaxed max-w-xl">
+            <p className="mt-6 text-white/90 text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
               12,000+ RERA-verified properties across 25 cities. Owner-direct listings, dedicated advisors, and zero pushy sales calls.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link to="/properties" className="btn-primary text-base px-7 py-3">
                 Browse Properties <ArrowRight size={18} />
               </Link>
-              <Link to="/contact" className="btn-outline text-base px-7 py-3">
+              <Link to="/contact" className="btn-outline text-base px-7 py-3 !bg-white/10 !text-white !border-white/30 hover:!bg-white/20">
                 Talk to an expert
               </Link>
             </div>
 
-            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-500 dark:text-slate-400">
-              <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={14} className="text-emerald-500" /> RERA verified</span>
-              <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={14} className="text-emerald-500" /> No spam calls</span>
-              <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={14} className="text-emerald-500" /> Free legal check</span>
-              <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={14} className="text-emerald-500" /> 24/7 support</span>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-white/80">
+              <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={14} className="text-emerald-400" /> RERA verified</span>
+              <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={14} className="text-emerald-400" /> No spam calls</span>
+              <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={14} className="text-emerald-400" /> Free legal check</span>
+              <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={14} className="text-emerald-400" /> 24/7 support</span>
             </div>
 
-            <div className="mt-10 grid grid-cols-3 gap-4 max-w-md">
-              {[
-                { v: '12k+', l: 'Properties' },
-                { v: '8k+', l: 'Happy Clients' },
-                { v: '25+', l: 'Cities' },
-              ].map((s) => (
-                <div key={s.l}>
-                  <div className="font-display font-extrabold text-2xl md:text-3xl">{s.v}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-widest">{s.l}</div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="relative"
-          >
-            <div className="relative rounded-3xl overflow-hidden shadow-glow">
-              <img
-                src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80"
-                alt="Premium home"
-                className="w-full h-[480px] object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <div className="absolute bottom-6 left-6 right-6 glass-card p-4 flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-brand-gradient grid place-items-center">
-                  <Building2 size={20} className="text-white" />
-                </div>
-                <div className="flex-1">
-                  <div className="font-semibold">Luxury Villas in Bandra</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Starting ₹ 4.2 Cr · Mumbai</div>
-                </div>
-                <Link to="/properties" className="btn-primary px-3 py-2 text-xs">View</Link>
-              </div>
-            </div>
-
-            {/* Floating proof card */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
-              className="hidden md:flex absolute -left-6 top-10 glass-card px-4 py-3 items-center gap-3"
-            >
-              <div className="flex -space-x-2">
-                {[12, 47, 33].map((id) => (
-                  <img
-                    key={id}
-                    src={`https://i.pravatar.cc/60?img=${id}`}
-                    alt=""
-                    className="w-8 h-8 rounded-full ring-2 ring-white dark:ring-surface-darker"
-                  />
-                ))}
-              </div>
-              <div>
-                <div className="font-semibold text-sm">2,400+ booked</div>
-                <div className="text-[10px] text-slate-500 uppercase tracking-wider">this quarter</div>
-              </div>
-            </motion.div>
+            <StatsCounter />
           </motion.div>
         </div>
       </section>
@@ -264,13 +273,36 @@ export default function Home() {
             >
               <Link
                 to={`/properties?propertyType=${t.query}`}
-                className="glass-card p-5 flex flex-col items-center text-center hover:-translate-y-1 hover:shadow-glow transition-all"
+                className="group relative overflow-hidden rounded-2xl shadow-card hover:shadow-glow transition-all hover:-translate-y-2 block"
               >
-                <div className="w-12 h-12 rounded-xl bg-brand-gradient text-white grid place-items-center mb-3 shadow-soft">
-                  <t.icon size={20} />
+                {/* Background Image */}
+                <div className="aspect-[3/4] relative overflow-hidden">
+                  <img
+                    src={t.img}
+                    alt={t.label}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+                  
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-brand-600/0 group-hover:bg-brand-600/20 transition-colors duration-300" />
                 </div>
-                <div className="font-display font-bold text-sm">{t.label}</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{t.count}</div>
+                
+                {/* Content */}
+                <div className="absolute inset-x-0 bottom-0 p-3 md:p-4 text-center">
+                  <div className="font-display font-bold text-sm md:text-base lg:text-lg text-white mb-1 group-hover:scale-105 transition-transform">
+                    {t.label}
+                  </div>
+                  <div className="text-[10px] md:text-xs text-white/90 font-medium">{t.count}</div>
+                  
+                  {/* Arrow on Hover */}
+                  <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="inline-flex items-center gap-1 text-[10px] md:text-xs text-white font-semibold">
+                      Explore <ArrowRight size={12} />
+                    </span>
+                  </div>
+                </div>
               </Link>
             </motion.div>
           ))}
@@ -332,13 +364,38 @@ export default function Home() {
           title="Premium real-estate, end-to-end"
           description="From discovery to deeds — a complete suite of services to make property simple."
         />
-        <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
           {[
-            { i: HomeIcon, t: 'Property Buying', d: 'Curated homes that match your life.' },
-            { i: TrendingUp, t: 'Property Selling', d: 'Smart pricing and faster closures.' },
-            { i: Key, t: 'Property Renting', d: 'Verified rentals across cities.' },
-            { i: Shield, t: 'Investment Advisory', d: 'Data-driven investment guidance.' },
-            { i: Scale, t: 'Legal Assistance', d: 'Compliance, paperwork & due-diligence.' },
+            { 
+              i: HomeIcon, 
+              t: 'Property Buying', 
+              d: 'Curated homes that match your life.',
+              img: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=600&auto=format&fit=crop&q=80'
+            },
+            { 
+              i: TrendingUp, 
+              t: 'Property Selling', 
+              d: 'Smart pricing and faster closures.',
+              img: 'https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=600&auto=format&fit=crop&q=80'
+            },
+            { 
+              i: Key, 
+              t: 'Property Renting', 
+              d: 'Verified rentals across cities.',
+              img: 'https://images.unsplash.com/photo-1515263487990-61b07816b324?w=600&auto=format&fit=crop&q=80'
+            },
+            { 
+              i: Shield, 
+              t: 'Investment Advisory', 
+              d: 'Data-driven investment guidance.',
+              img: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=600&auto=format&fit=crop&q=80'
+            },
+            { 
+              i: Scale, 
+              t: 'Legal Assistance', 
+              d: 'Compliance, paperwork & due-diligence.',
+              img: 'https://images.unsplash.com/photo-1436450412740-6b988f486c6b?w=600&auto=format&fit=crop&q=80'
+            },
           ].map((s, i) => (
             <motion.div
               key={s.t}
@@ -346,13 +403,30 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.06 }}
-              className="glass-card p-6 hover:shadow-glow hover:-translate-y-1 transition-all"
+              className="group relative overflow-hidden rounded-2xl shadow-card hover:shadow-glow hover:-translate-y-1 transition-all"
             >
-              <div className="w-12 h-12 rounded-xl bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-300 grid place-items-center mb-4">
-                <s.i size={22} />
+              {/* Background Image */}
+              <div className="aspect-[4/5] relative overflow-hidden">
+                <img
+                  src={s.img}
+                  alt={s.t}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/20" />
               </div>
-              <h3 className="font-display font-bold text-lg mb-1.5">{s.t}</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">{s.d}</p>
+
+              {/* Content */}
+              <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-6">
+                <h3 className="font-display font-bold text-base md:text-lg text-white mb-2">{s.t}</h3>
+                <p className="text-xs md:text-sm text-white/90 leading-relaxed">{s.d}</p>
+                
+                {/* Learn More on Hover */}
+                <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="inline-flex items-center gap-1 text-xs text-white font-semibold">
+                    Learn more <ArrowRight size={12} />
+                  </span>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>
@@ -391,7 +465,7 @@ export default function Home() {
           title="Real estate, without the runaround"
           description="No spam calls. No hidden fees. No mystery brokers. Just a calmer way to buy, sell or rent."
         />
-        <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {WHY_US.map((w, i) => (
             <motion.div
               key={w.t}
@@ -399,13 +473,30 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
-              className="glass-card p-6"
+              className="group relative overflow-hidden rounded-2xl shadow-card hover:shadow-glow hover:-translate-y-1 transition-all"
             >
-              <div className="w-12 h-12 rounded-xl bg-brand-gradient text-white grid place-items-center mb-4 shadow-soft">
-                <w.icon size={20} />
+              {/* Background Image */}
+              <div className="aspect-[4/5] md:aspect-[16/10] relative overflow-hidden">
+                <img
+                  src={w.img}
+                  alt={w.t}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/20" />
               </div>
-              <h3 className="font-display font-bold text-lg mb-1.5">{w.t}</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{w.d}</p>
+
+              {/* Content */}
+              <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-6">
+                <h3 className="font-display font-bold text-base md:text-lg text-white mb-2">{w.t}</h3>
+                <p className="text-xs md:text-sm text-white/90 leading-relaxed">{w.d}</p>
+                
+                {/* Checkmark Icon on Hover */}
+                <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="inline-flex items-center gap-2 text-xs text-emerald-400 font-semibold">
+                    <CheckCircle2 size={16} /> Verified Feature
+                  </div>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>
@@ -418,7 +509,7 @@ export default function Home() {
           title="Four simple steps to your new address"
           description="From the first call to the day you get the keys — here's exactly what to expect."
         />
-        <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-5 relative">
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 relative">
           {/* connecting line */}
           <div className="hidden lg:block absolute top-10 left-[12%] right-[12%] h-px bg-gradient-to-r from-transparent via-brand-200 dark:via-brand-500/30 to-transparent" />
           {HOW_IT_WORKS.map((s, i) => (
@@ -428,13 +519,35 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.08 }}
-              className="relative glass-card p-6 text-center"
+              className="relative glass-card p-5 md:p-6 text-center group hover:shadow-glow hover:-translate-y-1 transition-all"
             >
-              <div className="mx-auto w-14 h-14 rounded-2xl bg-brand-gradient grid place-items-center text-white font-display font-extrabold text-lg shadow-glow">
-                {s.n}
+              {/* SVG Number Badge */}
+              <div className="mx-auto w-14 h-14 md:w-16 md:h-16 mb-4 group-hover:scale-110 transition-transform">
+                <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">
+                  <defs>
+                    <linearGradient id={`gradient-${i}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#6366f1" />
+                      <stop offset="50%" stopColor="#4f46e5" />
+                      <stop offset="100%" stopColor="#312e81" />
+                    </linearGradient>
+                  </defs>
+                  <circle cx="50" cy="50" r="48" fill={`url(#gradient-${i})`} />
+                  <text
+                    x="50"
+                    y="50"
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fill="white"
+                    fontSize="32"
+                    fontWeight="bold"
+                    fontFamily="Plus Jakarta Sans, sans-serif"
+                  >
+                    {s.n}
+                  </text>
+                </svg>
               </div>
-              <h3 className="font-display font-bold text-lg mt-4">{s.t}</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1.5 leading-relaxed">{s.d}</p>
+              <h3 className="font-display font-bold text-base md:text-lg mt-4">{s.t}</h3>
+              <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400 mt-1.5 leading-relaxed">{s.d}</p>
             </motion.div>
           ))}
         </div>
@@ -445,21 +558,11 @@ export default function Home() {
         <div className="rounded-3xl bg-brand-gradient text-white overflow-hidden relative">
           <div className="absolute -top-20 -right-20 w-80 h-80 bg-white/10 rounded-full blur-2xl" />
           <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-accent-500/30 rounded-full blur-2xl" />
-          <div className="relative grid sm:grid-cols-2 lg:grid-cols-4 gap-8 p-10 md:p-14">
-            {[
-              { i: Building2, v: '12,400+', l: 'Properties listed' },
-              { i: Users, v: '8,200+', l: 'Happy clients' },
-              { i: TrendingUp, v: '₹ 2,000 Cr+', l: 'Closed value' },
-              { i: Star, v: '4.9 / 5', l: 'Avg. rating' },
-            ].map((s) => (
-              <div key={s.l} className="text-center">
-                <div className="w-14 h-14 mx-auto rounded-2xl bg-white/10 backdrop-blur grid place-items-center mb-4">
-                  <s.i size={24} />
-                </div>
-                <div className="font-display font-extrabold text-3xl md:text-4xl">{s.v}</div>
-                <div className="text-sm opacity-80 mt-1">{s.l}</div>
-              </div>
-            ))}
+          <div className="relative grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 p-8 md:p-14">
+            <AnimatedStat icon={Building2} value="12,400+" label="Properties listed" />
+            <AnimatedStat icon={Users} value="8,200+" label="Happy clients" />
+            <AnimatedStat icon={TrendingUp} value="₹ 2,000 Cr+" label="Closed value" />
+            <AnimatedStat icon={Star} value="4.9 / 5" label="Avg. rating" isRating />
           </div>
         </div>
       </section>
@@ -471,7 +574,7 @@ export default function Home() {
           title="Real stories. Real homes."
           description="What people are saying about working with us."
         />
-        <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {(reviews.length ? reviews : SAMPLE_REVIEWS).map((r, i) => (
             <motion.div
               key={r._id || i}
@@ -479,12 +582,12 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.06 }}
-              className="glass-card p-6"
+              className="glass-card p-5 md:p-6 hover:shadow-glow hover:-translate-y-1 transition-all"
             >
-              <Rating value={r.rating} />
-              <p className="mt-4 text-slate-700 dark:text-slate-300 leading-relaxed line-clamp-5">"{r.review}"</p>
+              <SvgStarRating value={r.rating} />
+              <p className="mt-4 text-slate-700 dark:text-slate-300 leading-relaxed line-clamp-5 text-sm md:text-base">"{r.review}"</p>
               <div className="mt-5 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-brand-gradient grid place-items-center text-white font-bold">
+                <div className="w-10 h-10 rounded-full bg-brand-gradient grid place-items-center text-white font-bold text-sm">
                   {r.name?.[0]?.toUpperCase()}
                 </div>
                 <div>
@@ -563,31 +666,90 @@ export default function Home() {
 
       {/* CTA */}
       <section className="container-x mt-24">
-        <div className="rounded-3xl overflow-hidden relative bg-surface-darker text-white p-10 md:p-16 grid lg:grid-cols-2 gap-8 items-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="rounded-3xl overflow-hidden relative bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900 text-white p-8 md:p-12 lg:p-16"
+        >
           <div className="absolute inset-0 -z-10">
-            <div className="absolute -top-32 -right-32 w-96 h-96 bg-brand-500/40 rounded-full blur-3xl" />
-            <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-accent-500/30 rounded-full blur-3xl" />
+            <div className="absolute -top-32 -right-32 w-96 h-96 bg-accent-500/30 rounded-full blur-3xl animate-pulse-slow" />
+            <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-brand-400/30 rounded-full blur-3xl animate-pulse-slow" />
           </div>
-          <div>
-            <h2 className="section-title">Ready to find your next home?</h2>
-            <p className="text-slate-300 mt-3 max-w-lg">
-              Our team is just a message away. Tell us what you're looking for and we'll handle the rest — usually within 24 hours.
-            </p>
-            <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-300">
-              <span className="inline-flex items-center gap-1.5"><Phone size={13} /> +91 98765 43210</span>
-              <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={13} className="text-emerald-400" /> Free consultation</span>
-              <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={13} className="text-emerald-400" /> No spam, ever</span>
+          
+          <div className="relative grid lg:grid-cols-2 gap-8 items-center">
+            <div>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+              >
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm text-white text-xs font-semibold uppercase tracking-wider mb-4">
+                  <Sparkles size={12} /> Get Started Today
+                </span>
+                <h2 className="section-title text-3xl md:text-4xl lg:text-5xl">Ready to find your next home?</h2>
+                <p className="text-white/90 mt-4 text-sm md:text-base max-w-lg leading-relaxed">
+                  Our team is just a message away. Tell us what you're looking for and we'll handle the rest — usually within 24 hours.
+                </p>
+                <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs md:text-sm text-white/90">
+                  <span className="inline-flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-white/20 grid place-items-center">
+                      <Phone size={12} />
+                    </div>
+                    +91 98765 43210
+                  </span>
+                  <span className="inline-flex items-center gap-2">
+                    <CheckCircle2 size={14} className="text-emerald-400" /> Free consultation
+                  </span>
+                  <span className="inline-flex items-center gap-2">
+                    <CheckCircle2 size={14} className="text-emerald-400" /> No spam, ever
+                  </span>
+                </div>
+              </motion.div>
             </div>
+            
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="flex flex-col gap-3"
+            >
+              <Link 
+                to="/contact" 
+                className="group relative overflow-hidden bg-white text-brand-600 px-8 py-4 rounded-xl font-bold text-base md:text-lg flex items-center justify-center gap-2 hover:scale-105 transition-all shadow-xl"
+              >
+                <span className="relative z-10">Talk to an expert</span>
+                <ArrowRight size={20} className="relative z-10 group-hover:translate-x-1 transition-transform" />
+                <div className="absolute inset-0 bg-gradient-to-r from-brand-50 to-white opacity-0 group-hover:opacity-100 transition-opacity" />
+              </Link>
+              
+              <Link 
+                to="/properties" 
+                className="group bg-white/10 backdrop-blur-sm hover:bg-white/20 border-2 border-white/30 text-white px-8 py-4 rounded-xl font-bold text-base md:text-lg flex items-center justify-center gap-2 hover:scale-105 transition-all"
+              >
+                <span>View listings</span>
+                <Building2 size={20} className="group-hover:scale-110 transition-transform" />
+              </Link>
+
+              <div className="mt-4 grid grid-cols-3 gap-3 text-center">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                  <div className="font-bold text-lg md:text-xl">24/7</div>
+                  <div className="text-[10px] md:text-xs text-white/80">Support</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                  <div className="font-bold text-lg md:text-xl">100%</div>
+                  <div className="text-[10px] md:text-xs text-white/80">Verified</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                  <div className="font-bold text-lg md:text-xl">Free</div>
+                  <div className="text-[10px] md:text-xs text-white/80">Consultation</div>
+                </div>
+              </div>
+            </motion.div>
           </div>
-          <div className="flex flex-wrap gap-3 justify-start lg:justify-end">
-            <Link to="/contact" className="btn-accent text-base px-7 py-3">
-              Talk to an expert <ArrowRight size={18} />
-            </Link>
-            <Link to="/properties" className="btn-outline text-base px-7 py-3 !bg-white/10 !text-white !border-white/20">
-              View listings
-            </Link>
-          </div>
-        </div>
+        </motion.div>
       </section>
     </div>
   );
@@ -658,3 +820,262 @@ const SAMPLE_REVIEWS = [
   { name: 'Arjun Mehta', rating: 5, review: 'Best investment advisory I have worked with. Found properties with strong rental yields and the legal team caught a title issue we would have missed.' },
   { name: 'Neha Kapoor', rating: 4, review: 'Found our perfect rental in under a week. Loved the curated options and the move-in coordination was a lifesaver.' },
 ];
+
+
+// Background Carousel Component
+function BackgroundCarousel() {
+  const images = [
+    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1505843513577-22bb7d21e455?w=1200&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=1200&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1622015663319-e97e697503ee?w=1200&auto=format&fit=crop&q=80',
+    'https://media.istockphoto.com/id/1391413216/photo/rising-prices-for-real-estate.webp?a=1&b=1&s=612x612&w=0&k=20&c=R9Q0JDjZMqp5mlUQ75B3wTgsM6LiFnwBHcAZRdWMSMM=',
+  ];
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [images.length]);
+
+  return (
+    <div className="absolute inset-0 -z-10">
+      <div className="absolute inset-0 bg-black/50 z-10" />
+      
+      {/* Images */}
+      {images.map((img, index) => (
+        <div
+          key={index}
+          className={`absolute inset-0 transition-opacity duration-1000 ${
+            index === currentIndex ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <img
+            src={img}
+            alt={`Property ${index + 1}`}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ))}
+
+      {/* Dots Indicator */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+        {images.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            className={`w-2 h-2 rounded-full transition-all ${
+              index === currentIndex
+                ? 'bg-white w-6'
+                : 'bg-white/50 hover:bg-white/70'
+            }`}
+            aria-label={`Go to image ${index + 1}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Stats Counter Component
+function StatsCounter() {
+  const [counts, setCounts] = useState({ properties: 0, clients: 0, cities: 0 });
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  useEffect(() => {
+    if (hasAnimated) return;
+
+    const targets = { properties: 12000, clients: 8000, cities: 25 };
+    const duration = 2000; // 2 seconds
+    const steps = 60;
+    const interval = duration / steps;
+
+    let step = 0;
+    const timer = setInterval(() => {
+      step++;
+      const progress = step / steps;
+
+      setCounts({
+        properties: Math.floor(targets.properties * progress),
+        clients: Math.floor(targets.clients * progress),
+        cities: Math.floor(targets.cities * progress),
+      });
+
+      if (step >= steps) {
+        setCounts(targets);
+        setHasAnimated(true);
+        clearInterval(timer);
+      }
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [hasAnimated]);
+
+  return (
+    <div className="mt-8 grid grid-cols-3 gap-3 md:gap-4 max-w-xl mx-auto">
+      <div className="backdrop-blur-sm bg-white/10 rounded-lg md:rounded-xl p-3 md:p-4">
+        <div className="font-display font-extrabold text-xl md:text-2xl text-white">
+          {counts.properties >= 1000 ? `${(counts.properties / 1000).toFixed(0)}k+` : `${counts.properties}+`}
+        </div>
+        <div className="text-[10px] md:text-xs text-white/70 uppercase tracking-wider mt-0.5">Properties</div>
+      </div>
+      <div className="backdrop-blur-sm bg-white/10 rounded-lg md:rounded-xl p-3 md:p-4">
+        <div className="font-display font-extrabold text-xl md:text-2xl text-white">
+          {counts.clients >= 1000 ? `${(counts.clients / 1000).toFixed(0)}k+` : `${counts.clients}+`}
+        </div>
+        <div className="text-[10px] md:text-xs text-white/70 uppercase tracking-wider mt-0.5">Happy Clients</div>
+      </div>
+      <div className="backdrop-blur-sm bg-white/10 rounded-lg md:rounded-xl p-3 md:p-4">
+        <div className="font-display font-extrabold text-xl md:text-2xl text-white">
+          {counts.cities}+
+        </div>
+        <div className="text-[10px] md:text-xs text-white/70 uppercase tracking-wider mt-0.5">Cities</div>
+      </div>
+    </div>
+  );
+}
+
+// Animated Stat Component for Stats Section
+function AnimatedStat({ icon: Icon, value, label, isRating = false }) {
+  const [count, setCount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (!isVisible || hasAnimated) return;
+
+    if (isRating) {
+      // For rating, animate to 4.9
+      const target = 4.9;
+      const duration = 2000;
+      const steps = 60;
+      const interval = duration / steps;
+      let step = 0;
+
+      const timer = setInterval(() => {
+        step++;
+        const progress = step / steps;
+        setCount(target * progress);
+
+        if (step >= steps) {
+          setCount(target);
+          setHasAnimated(true);
+          clearInterval(timer);
+        }
+      }, interval);
+
+      return () => clearInterval(timer);
+    } else {
+      // For other stats
+      const numericValue = parseInt(value.replace(/[^0-9]/g, ''));
+      const duration = 2000;
+      const steps = 60;
+      const interval = duration / steps;
+      let step = 0;
+
+      const timer = setInterval(() => {
+        step++;
+        const progress = step / steps;
+        setCount(Math.floor(numericValue * progress));
+
+        if (step >= steps) {
+          setCount(numericValue);
+          setHasAnimated(true);
+          clearInterval(timer);
+        }
+      }, interval);
+
+      return () => clearInterval(timer);
+    }
+  }, [isVisible, hasAnimated, value, isRating]);
+
+  const formatValue = () => {
+    if (isRating) {
+      return `${count.toFixed(1)} / 5`;
+    }
+    if (value.includes('Cr')) {
+      return `₹ ${(count / 1000).toFixed(count < 1000 ? 0 : 1)} Cr+`;
+    }
+    if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}k+`;
+    }
+    return `${count}+`;
+  };
+
+  // SVG Icons
+  const renderIcon = () => {
+    const iconName = Icon.name || Icon.displayName || '';
+    
+    if (iconName.includes('Building')) {
+      return (
+        <svg className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />
+          <path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01" />
+        </svg>
+      );
+    } else if (iconName.includes('Users')) {
+      return (
+        <svg className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      );
+    } else if (iconName.includes('TrendingUp')) {
+      return (
+        <svg className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+          <polyline points="17 6 23 6 23 12" />
+        </svg>
+      );
+    } else if (iconName.includes('Star')) {
+      return (
+        <svg className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
+      );
+    }
+    
+    return <Icon className="w-5 h-5 md:w-6 md:h-6" />;
+  };
+
+  return (
+    <motion.div 
+      className="text-center"
+      initial={{ opacity: 0, scale: 0.8 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      onViewportEnter={() => setIsVisible(true)}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="w-12 h-12 md:w-14 md:h-14 mx-auto rounded-2xl bg-white/10 backdrop-blur grid place-items-center mb-3 md:mb-4 text-white">
+        {renderIcon()}
+      </div>
+      <div className="font-display font-extrabold text-2xl md:text-3xl lg:text-4xl">
+        {formatValue()}
+      </div>
+      <div className="text-xs md:text-sm opacity-80 mt-1">{label}</div>
+    </motion.div>
+  );
+}
+
+// SVG Star Rating Component
+function SvgStarRating({ value }) {
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <svg
+          key={star}
+          className="w-4 h-4 md:w-5 md:h-5"
+          viewBox="0 0 24 24"
+          fill={star <= value ? '#fbbf24' : '#e5e7eb'}
+        >
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
+      ))}
+    </div>
+  );
+}
