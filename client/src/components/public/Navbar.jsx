@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Building2, Phone, ChevronRight } from 'lucide-react';
+import { Menu, X, Building2, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const links = [
@@ -56,7 +56,7 @@ export default function Navbar() {
               end={l.to === '/'}
               className={({ isActive }) =>
                 cn(
-                  'px-4 py-2 text-sm font-medium transition relative flex items-center gap-1.5 group',
+                  'px-4 py-2 text-sm font-medium transition relative',
                   'after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:transition-all',
                   isActive
                     ? 'text-brand-600 dark:text-brand-300 after:bg-brand-600 dark:after:bg-brand-300'
@@ -64,7 +64,6 @@ export default function Navbar() {
                 )
               }
             >
-              <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition -ml-1" />
               {l.label}
             </NavLink>
           ))}
@@ -116,7 +115,7 @@ export default function Navbar() {
                     end={l.to === '/'}
                     className={({ isActive }) =>
                       cn(
-                        'px-4 py-2.5 text-sm font-medium relative flex items-center gap-2 group',
+                        'px-4 py-2.5 text-sm font-medium relative',
                         'after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:transition-all',
                         isActive
                           ? 'text-brand-600 dark:text-brand-300 after:bg-brand-600 dark:after:bg-brand-300'
@@ -124,7 +123,6 @@ export default function Navbar() {
                       )
                     }
                   >
-                    <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition flex-shrink-0" />
                     {l.label}
                   </NavLink>
                 ))}
