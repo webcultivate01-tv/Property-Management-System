@@ -39,7 +39,7 @@ export default function Contact() {
 
   return (
     <div>
-      <section className="container-x py-16 md:py-24 text-center">
+      <section className="container-x pt-10 pb-10 md:pt-14 md:pb-12 text-center">
         <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-widest bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300">
           Contact
         </span>
@@ -86,24 +86,37 @@ export default function Contact() {
           </Button>
         </motion.form>
 
-        <aside className="space-y-5">
-          {[
-            { i: MapPin, t: 'Visit Us', v: 'Mumbai, Maharashtra, India' },
-            { i: Phone, t: 'Call Us', v: '+91 98765 43210' },
-            { i: Mail, t: 'Email', v: 'contact@telvine.com' },
-            { i: Clock, t: 'Working Hours', v: 'Mon – Sat, 9:00 AM – 7:00 PM' },
-          ].map((s) => (
-            <div key={s.t} className="glass-card p-5 flex items-start gap-4">
-              <div className="w-11 h-11 rounded-xl bg-brand-gradient grid place-items-center text-white">
-                <s.i size={18} />
-              </div>
-              <div>
-                <div className="font-semibold">{s.t}</div>
-                <div className="text-sm text-slate-500 dark:text-slate-400">{s.v}</div>
-              </div>
+        <aside className="space-y-4">
+          {/* Contact info cards — icon style like Follow Us */}
+          <div className="glass-card p-5">
+            <div className="font-semibold mb-4 text-sm uppercase tracking-widest text-slate-500 dark:text-slate-400">
+              Get in touch
             </div>
-          ))}
+            <div className="space-y-3">
+              {[
+                { i: MapPin,  t: 'Visit Us',        v: 'Mumbai, Maharashtra, India'    },
+                { i: Phone,   t: 'Call Us',         v: '+91 98765 43210'               },
+                { i: Mail,    t: 'Email',           v: 'contact@telvine.com'           },
+                { i: Clock,   t: 'Working Hours',   v: 'Mon – Sat, 9:00 AM – 7:00 PM' },
+              ].map((s) => (
+                <div
+                  key={s.t}
+                  className="group flex items-center gap-4 p-3 rounded-2xl border border-transparent bg-slate-50 dark:bg-white/[0.03] cursor-default transition-all duration-200 hover:bg-brand-50 dark:hover:bg-brand-500/10 hover:text-brand-600 dark:hover:text-brand-400 hover:border-brand-200 dark:hover:border-brand-500/30"
+                >
+                  {/* Icon box */}
+                  <div className="w-11 h-11 rounded-xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 grid place-items-center shrink-0 shadow-sm group-hover:scale-110 transition-transform duration-200">
+                    <s.i size={18} className="text-slate-500 dark:text-slate-400 group-hover:text-current transition-colors duration-200" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm">{s.t}</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{s.v}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
+          {/* Follow Us */}
           <div className="glass-card p-5">
             <div className="font-semibold mb-3">Follow us</div>
             <div className="flex gap-2">

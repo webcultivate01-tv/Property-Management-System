@@ -119,21 +119,124 @@ const packages = [
 export default function Services() {
   return (
     <div>
-      <section className="container-x py-16 md:py-24 text-center">
-        <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-widest bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300">
-          Services
-        </span>
-        <h1 className="font-display font-extrabold text-4xl md:text-6xl mt-5">
-          Everything you need, <br />
-          <span className="bg-gradient-to-r from-brand-600 to-accent-500 bg-clip-text text-transparent">all in one place.</span>
-        </h1>
-        <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mt-6 text-lg">
-          From your first visit to the final signature, our services cover every stage of your property journey.
-        </p>
+
+      {/* ─────────────────────────────────────────────────
+          HERO SECTION — Cinematic full-bleed
+      ───────────────────────────────────────────────── */}
+      <section className="relative pt-8 pb-16 md:pt-16 lg:pt-24 lg:pb-28 overflow-hidden">
+        <div className="container-x grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+          
+          {/* Left Column: Content */}
+          <div className="relative z-10 max-w-xl">
+            {/* Top badge */}
+            <motion.div
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-brand-200 dark:border-brand-500/30 bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300 text-xs font-semibold uppercase tracking-widest mb-6"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
+              End-to-end property services
+            </motion.div>
+
+            {/* Eyebrow line */}
+            <motion.p
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-brand-600 dark:text-brand-400 text-sm font-semibold uppercase tracking-[0.2em] mb-4"
+            >
+              Our Services
+            </motion.p>
+
+            {/* Headline */}
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              className="font-display font-extrabold text-slate-900 dark:text-white leading-[1.1] text-4xl sm:text-5xl md:text-6xl lg:text-[72px]"
+            >
+              Everything you need,{' '}
+              <br className="hidden sm:block" />
+              <span className="bg-gradient-to-r from-brand-600 via-brand-500 to-accent-500 dark:from-brand-300 dark:via-brand-400 dark:to-accent-400 bg-clip-text text-transparent">
+                all in one place.
+              </span>
+            </motion.h1>
+
+            {/* Subtext */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="mt-6 text-slate-600 dark:text-slate-400 text-lg md:text-xl leading-relaxed"
+            >
+              From your first visit to the final signature — buying, selling, renting, investing.
+              We cover every stage of your property journey with expert guidance.
+            </motion.p>
+
+            {/* CTA row */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.75 }}
+              className="mt-8 flex flex-wrap items-center gap-4"
+            >
+              <Link
+                to="/contact"
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-brand-gradient text-white font-semibold text-sm hover:opacity-90 transition-opacity shadow-glow"
+              >
+                Book a consultation <ArrowRight size={15} />
+              </Link>
+              <Link
+                to="/properties"
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white font-semibold text-sm hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+              >
+                Explore properties
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Right Column: Image */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="relative lg:ml-auto w-full max-w-lg lg:max-w-none"
+          >
+            {/* Decorative background shape */}
+            <div className="absolute -inset-4 bg-gradient-to-tr from-brand-100 to-accent-50 dark:from-brand-500/20 dark:to-accent-500/10 rounded-[2.5rem] transform rotate-3 scale-105 opacity-70 blur-lg" />
+            
+            <div className="relative rounded-[2rem] overflow-hidden shadow-2xl aspect-[4/5] lg:aspect-auto lg:h-[600px]">
+              <img
+                src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&q=90"
+                alt="Premium real estate services"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+            </div>
+            
+            {/* Floating stats card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="absolute -bottom-6 -left-6 bg-white dark:bg-slate-900 p-5 rounded-2xl flex items-center gap-4 shadow-xl border border-slate-100 dark:border-white/10"
+            >
+              <div className="w-12 h-12 rounded-full bg-brand-50 dark:bg-brand-500/20 text-brand-600 dark:text-brand-300 flex items-center justify-center">
+                <Users size={20} />
+              </div>
+              <div>
+                <div className="text-sm text-slate-500 dark:text-slate-400 font-medium">Trusted by</div>
+                <div className="font-display font-extrabold text-xl text-slate-900 dark:text-white">8,000+ families</div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
       </section>
+      {/* ─── END HERO ─── */}
 
       {/* SERVICES GRID — with imagery */}
-      <section className="container-x grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <section className="container-x mt-24 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {services.map((s, i) => (
           <motion.div
             key={s.title}
@@ -326,6 +429,8 @@ export default function Services() {
           </div>
         </div>
       </section>
+
+
     </div>
   );
 }

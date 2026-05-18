@@ -37,44 +37,119 @@ const recognitions = [
   'Google Cloud Customer Award 2023',
 ];
 
+
+
 export default function About() {
   return (
     <div>
-      <section className="container-x py-16 md:py-24 text-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-widest bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300">
-            About Telvine Realty
-          </span>
-          <h1 className="font-display font-extrabold text-4xl md:text-6xl mt-5 leading-tight">
-            Premium real estate, <br />
-            crafted around <span className="bg-gradient-to-r from-brand-600 to-accent-500 bg-clip-text text-transparent">you.</span>
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mt-6 text-lg">
-            We're more than a real estate platform — we're a partner for life-changing decisions.
-            From your first apartment to your dream villa, we make every step intentional.
-          </p>
-        </motion.div>
-      </section>
 
-      {/* HERO BANNER */}
-      <section className="container-x">
-        <div className="rounded-3xl overflow-hidden relative shadow-glow">
+      {/* ─────────────────────────────────────────────────
+          HERO SECTION — Cinematic full-bleed
+      ───────────────────────────────────────────────── */}
+      <section className="relative min-h-[75vh] lg:min-h-[80vh] flex flex-col justify-end overflow-hidden">
+
+        {/* Background image */}
+        <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1600&q=80"
-            alt="Modern home exterior"
-            className="w-full h-[260px] md:h-[420px] object-cover"
+            src="https://images.unsplash.com/photo-1613977257363-707ba9348227?w=2000&q=90"
+            alt="Luxury property exterior"
+            className="w-full h-full object-cover object-center scale-105"
+            style={{ transform: 'scale(1.04)' }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
-          <div className="absolute inset-0 flex items-center px-8 md:px-16">
-            <div className="max-w-xl text-white">
-              <div className="text-xs uppercase tracking-widest opacity-80 mb-2">Since 2016</div>
-              <h2 className="font-display font-extrabold text-2xl md:text-4xl leading-tight">
-                A decade of helping families find the right address.
-              </h2>
-            </div>
+          {/* Multi-layer overlay for depth */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
+          {/* Subtle warm tint at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/60 to-transparent" />
+        </div>
+
+        {/* Floating top badge */}
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 z-10">
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-white/80 text-xs font-semibold uppercase tracking-widest"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Est. 2016 · Telvine Realty
+          </motion.div>
+        </div>
+
+        {/* Main hero content */}
+        <div className="relative z-10 container-x pb-32 md:pb-48 lg:pb-40">
+          <div className="max-w-4xl">
+
+            {/* Eyebrow line */}
+            <motion.p
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-brand-300 text-sm font-semibold uppercase tracking-[0.2em] mb-5"
+            >
+              About us
+            </motion.p>
+
+            {/* Headline */}
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              className="font-display font-extrabold text-white leading-[1.08] text-5xl sm:text-6xl md:text-7xl lg:text-[80px]"
+            >
+              Premium real estate,{' '}
+              <br className="hidden sm:block" />
+              <span className="bg-gradient-to-r from-brand-300 via-brand-400 to-accent-400 bg-clip-text text-transparent">
+                crafted around you.
+              </span>
+            </motion.h1>
+
+            {/* Subtext */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="mt-6 text-white/70 text-lg md:text-xl max-w-2xl leading-relaxed"
+            >
+              We're more than a real estate platform — we're a partner for life-changing decisions.
+              From your first apartment to your dream villa, we make every step intentional.
+            </motion.p>
+
+            {/* CTA row */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.75 }}
+              className="mt-8 flex flex-wrap items-center gap-4"
+            >
+              <Link
+                to="/contact"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-slate-900 font-semibold text-sm hover:bg-brand-50 transition-colors shadow-lg"
+              >
+                Talk to us <ArrowRight size={15} />
+              </Link>
+              <Link
+                to="/properties"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/30 text-white font-semibold text-sm hover:bg-white/10 backdrop-blur-sm transition-colors"
+              >
+                Explore properties
+              </Link>
+            </motion.div>
           </div>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+          className="absolute bottom-8 right-8 z-10 hidden md:flex flex-col items-center gap-2 text-white/40"
+        >
+          <span className="text-[10px] uppercase tracking-widest rotate-90 origin-center translate-y-3">Scroll</span>
+          <div className="w-px h-12 bg-white/20 mt-4" />
+        </motion.div>
       </section>
+      {/* ─── END HERO ─── */}
+
 
       {/* STORY */}
       <section className="container-x mt-24 grid lg:grid-cols-2 gap-12 items-center">
@@ -282,6 +357,8 @@ export default function About() {
           </div>
         </div>
       </section>
+
+
     </div>
   );
 }
