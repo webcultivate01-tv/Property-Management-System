@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Building2, Phone } from 'lucide-react';
+import { Menu, X, Building2, Phone, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const links = [
   { to: '/', label: 'Home' },
+  { to: '/about', label: 'About' },
   { to: '/properties', label: 'Properties' },
   { to: '/services', label: 'Services' },
-  { to: '/about', label: 'About' },
   { to: '/contact', label: 'Contact' },
 ];
 
@@ -56,13 +56,15 @@ export default function Navbar() {
               end={l.to === '/'}
               className={({ isActive }) =>
                 cn(
-                  'px-4 py-2 rounded-lg text-sm font-medium transition',
+                  'px-4 py-2 text-sm font-medium transition relative flex items-center gap-1.5 group',
+                  'after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:transition-all',
                   isActive
-                    ? 'text-brand-600 dark:text-brand-300 bg-brand-50 dark:bg-brand-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'
+                    ? 'text-brand-600 dark:text-brand-300 after:bg-brand-600 dark:after:bg-brand-300'
+                    : 'text-slate-700 dark:text-slate-300 after:bg-slate-700 dark:after:bg-slate-300 after:scale-x-0 hover:after:scale-x-100'
                 )
               }
             >
+              <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition -ml-1" />
               {l.label}
             </NavLink>
           ))}
@@ -91,41 +93,53 @@ export default function Navbar() {
 
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="lg:hidden border-t border-slate-200/50 dark:border-white/5 bg-white/95 dark:bg-surface-darker/95 backdrop-blur-xl"
-          >
-            <div className="container-x py-4 flex flex-col gap-1">
-              {links.map((l) => (
-                <NavLink
-                  key={l.to}
-                  to={l.to}
-                  end={l.to === '/'}
-                  className={({ isActive }) =>
-                    cn(
-                      'px-4 py-2.5 rounded-lg text-sm font-medium',
-                      isActive
-                        ? 'bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-300'
-                        : 'hover:bg-slate-100 dark:hover:bg-white/5'
-                    )
-                  }
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="lg:hidden fixed inset-0 bg-black/20 backdrop-blur-sm"
+              onClick={() => setOpen(false)}
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'tween', duration: 0.3 }}
+              className="lg:hidden fixed top-16 md:top-20 right-0 bottom-0 w-64 bg-white dark:bg-surface-darker shadow-2xl overflow-y-auto"
+            >
+              <div className="py-4 px-3 flex flex-col gap-1">
+                {links.map((l) => (
+                  <NavLink
+                    key={l.to}
+                    to={l.to}
+                    end={l.to === '/'}
+                    className={({ isActive }) =>
+                      cn(
+                        'px-4 py-2.5 text-sm font-medium relative flex items-center gap-2 group',
+                        'after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:transition-all',
+                        isActive
+                          ? 'text-brand-600 dark:text-brand-300 after:bg-brand-600 dark:after:bg-brand-300'
+                          : 'text-slate-700 dark:text-slate-300 after:bg-slate-700 dark:after:bg-slate-300 after:scale-x-0 hover:after:scale-x-100'
+                      )
+                    }
+                  >
+                    <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition flex-shrink-0" />
+                    {l.label}
+                  </NavLink>
+                ))}
+                <a
+                  href="tel:+919876543210"
+                  className="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 inline-flex items-center gap-2 mt-2 hover:text-brand-600 dark:hover:text-brand-300 transition"
                 >
-                  {l.label}
-                </NavLink>
-              ))}
-              <a
-                href="tel:+919876543210"
-                className="px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-100 dark:hover:bg-white/5 inline-flex items-center gap-2"
-              >
-                <Phone size={14} /> +91 98765 43210
-              </a>
-              <Link to="/contact" className="btn-primary mt-2">
-                Talk to expert
-              </Link>
-            </div>
-          </motion.div>
+                  <Phone size={14} /> +91 98765 43210
+                </a>
+                <Link to="/contact" className="btn-primary mt-2 mx-4">
+                  Talk to expert
+                </Link>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </header>
